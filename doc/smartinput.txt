@@ -263,6 +263,13 @@ a |Dictionary| which contains the following items:
 
 	This specification works only for Insert mode.
 
+"expr" (expression string) (optional)
+	Specifies the context to use the smart input assistant.
+	This value is a string of expression to evaluate. 
+	please refer to |expression-syntax|.
+
+	The return of this 'expr' should be 0 or 1
+
 						*smartinput-special-keys*
 Values of "char" and "input" are internally passed to |:map| commands.  So
 that:

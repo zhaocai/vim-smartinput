@@ -414,6 +414,7 @@ function! s:calculate_rule_priority(snrule)  "{{{2
   \ len(a:snrule.at)
   \ + (a:snrule.filetype is 0 ? 0 : 100 / len(a:snrule.filetype))
   \ + (a:snrule.syntax is 0 ? 0 : 100 / len(a:snrule.syntax))
+  \ + (a:snrule.expr is 0 ? 0 : 100 / len(a:snrule.expr))
   \ + 100 / len(a:snrule.mode)
 endfunction
 
@@ -447,6 +448,12 @@ function! s:find_the_most_proper_rule_in_command_line_mode(nrules, char, cl_text
     " FIXME: Replace \%# correctly.
     " For example, if nrule.at is '\\%#', it should not be replaced.
     if cl_text !~# substitute(nrule.at, '\\%#', s:UNTYPABLE_CHAR, 'g')
+      continue
+    endif
+
+    if !(nrule.expr is 0
+    \    ? !0
+    \    : eval(nrule.expr))
       continue
     endif
 
@@ -488,6 +495,12 @@ function! s:find_the_most_proper_rule_in_insert_mode(nrules, char)  "{{{2
     if !(nrule.syntax is 0
     \    ? !0
     \    : 0 <= max(map(copy(nrule.syntax), 'index(syntax_names, v:val)')))
+      continue
+    endif
+
+    if !(nrule.expr is 0
+    \    ? !0
+    \    : eval(nrule.expr))
       continue
     endif
 
@@ -564,6 +577,10 @@ function! s:normalize_rule(urule)  "{{{2
     let nrule.syntax = 0
   endif
 
+  if !has_key(nrule, 'expr')
+    let nrule.expr = 0
+  endif
+
   let nrule.priority =  s:calculate_rule_priority(nrule)
 
   let nrule.hash = string([
@@ -571,7 +588,8 @@ function! s:normalize_rule(urule)  "{{{2
   \   nrule.at,
   \   nrule.char,
   \   nrule.filetype,
-  \   nrule.syntax
+  \   nrule.syntax,
+  \   nrule.expr,
   \ ])
 
   return nrule
