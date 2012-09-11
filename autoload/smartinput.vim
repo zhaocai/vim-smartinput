@@ -466,12 +466,16 @@ endfunction
 let s:UNTYPABLE_CHAR = "\x01"  " FIXME: Use a more proper value.
 
 
-
+function! s:get_syn_names(mode)  "{{{2
+  let col = a:mode ==# 'i' ? col('.') - 1 : col('.')
+  let syn_stack = synstack(line('.'), col)
+  return map(copy(syn_stack), 'synIDattr(synIDtrans(v:val), "name")')
+     \ + map(syn_stack, 'synIDattr(v:val, "name")')
+endfunction"}}}
 
 function! s:find_the_most_proper_rule_in_insert_mode(nrules, char)  "{{{2
   " FIXME: Optimize for speed if necessary.
-  let syntax_names = map(synstack(line('.'), col('.') - 1),
-  \                      'synIDattr(synIDtrans(v:val), "name")')
+  let syntax_names = s:get_syn_names('i')
 
   for nrule in a:nrules
     if stridx(nrule.mode, 'i') == -1
