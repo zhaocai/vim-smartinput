@@ -470,7 +470,7 @@ let s:UNTYPABLE_CHAR = "\x01"  " FIXME: Use a more proper value.
 
 function! s:find_the_most_proper_rule_in_insert_mode(nrules, char)  "{{{2
   " FIXME: Optimize for speed if necessary.
-  let syntax_names = map(synstack(line('.'), col('.')),
+  let syntax_names = map(synstack(line('.'), col('.') - 1),
   \                      'synIDattr(synIDtrans(v:val), "name")')
 
   for nrule in a:nrules
