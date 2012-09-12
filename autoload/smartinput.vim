@@ -414,6 +414,7 @@ function! s:calculate_rule_priority(snrule)  "{{{2
   \ len(a:snrule.at)
   \ + (a:snrule.filetype is 0 ? 0 : 100 / len(a:snrule.filetype))
   \ + (a:snrule.syntax is 0 ? 0 : 100 / len(a:snrule.syntax))
+  \ + (a:snrule.expr is 0 ? 0 : 100 / len(a:snrule.expr))
   \ + 100 / len(a:snrule.mode)
 endfunction
 
@@ -450,6 +451,12 @@ function! s:find_the_most_proper_rule_in_command_line_mode(nrules, char, cl_text
       continue
     endif
 
+    if !(nrule.expr is 0
+    \    ? !0
+    \    : eval(nrule.expr))
+      continue
+    endif
+
     return nrule
   endfor
 
@@ -459,12 +466,16 @@ endfunction
 let s:UNTYPABLE_CHAR = "\x01"  " FIXME: Use a more proper value.
 
 
-
+function! s:get_syn_names(mode)  "{{{2
+  let col = a:mode ==# 'i' ? col('.') - 1 : col('.')
+  let syn_stack = synstack(line('.'), col)
+  return map(copy(syn_stack), 'synIDattr(synIDtrans(v:val), "name")')
+     \ + map(syn_stack, 'synIDattr(v:val, "name")')
+endfunction"}}}
 
 function! s:find_the_most_proper_rule_in_insert_mode(nrules, char)  "{{{2
   " FIXME: Optimize for speed if necessary.
-  let syntax_names = map(synstack(line('.'), col('.')),
-  \                      'synIDattr(synIDtrans(v:val), "name")')
+  let syntax_names = s:get_syn_names('i')
 
   for nrule in a:nrules
     if stridx(nrule.mode, 'i') == -1
@@ -488,6 +499,12 @@ function! s:find_the_most_proper_rule_in_insert_mode(nrules, char)  "{{{2
     if !(nrule.syntax is 0
     \    ? !0
     \    : 0 <= max(map(copy(nrule.syntax), 'index(syntax_names, v:val)')))
+      continue
+    endif
+
+    if !(nrule.expr is 0
+    \    ? !0
+    \    : eval(nrule.expr))
       continue
     endif
 
@@ -564,6 +581,10 @@ function! s:normalize_rule(urule)  "{{{2
     let nrule.syntax = 0
   endif
 
+  if !has_key(nrule, 'expr')
+    let nrule.expr = 0
+  endif
+
   let nrule.priority =  s:calculate_rule_priority(nrule)
 
   let nrule.hash = string([
@@ -571,7 +592,8 @@ function! s:normalize_rule(urule)  "{{{2
   \   nrule.at,
   \   nrule.char,
   \   nrule.filetype,
-  \   nrule.syntax
+  \   nrule.syntax,
+  \   nrule.expr,
   \ ])
 
   return nrule
