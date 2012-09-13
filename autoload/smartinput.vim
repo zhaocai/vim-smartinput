@@ -88,6 +88,7 @@ function! smartinput#define_default_rules()  "{{{2
   \ ])
   call urules.add('{}', [
   \   {'at': '\%#\_s', 'char': '{', 'input': '{}<Left>'},
+  \   {'at': '\W\%#', 'char': '{', 'input': '{}<Left>'},
   \   {'at': '\%#\_s*}', 'char': '}', 'input': '<C-r>=smartinput#_leave_block(''}'')<Enter><Right>'},
   \   {'at': '{\%#}', 'char': '<BS>', 'input': '<BS><Del>'},
   \   {'at': '{}\%#', 'char': '<BS>', 'input': '<BS><BS>'},
@@ -95,7 +96,7 @@ function! smartinput#define_default_rules()  "{{{2
   \   {'at': '{\%#}', 'char': '<Enter>', 'input': '<Enter><Enter><Up><Esc>"_S'},
   \ ])
   call urules.add('''''', [
-  \   {'at': '\%#\_s', 'char': '''', 'input': '''''<Left>'},
+  \   {'at': '\%#', 'char': '''', 'input': '''''<Left>'},
   \   {'at': '\%#''\ze', 'char': '''', 'input': '<Right>'},
   \   {'at': '''\%#''', 'char': '<BS>', 'input': '<BS><Del>'},
   \   {'at': '''''\%#', 'char': '<BS>', 'input': '<BS><BS>'},
@@ -115,7 +116,7 @@ function! smartinput#define_default_rules()  "{{{2
   \   {'at': '''''''''''''\%#', 'char': '<BS>', 'input': '<BS><BS><BS><BS><BS><BS>'},
   \ ])
   call urules.add('""', [
-  \   {'at': '\%#\_s', 'char': '"', 'input': '""<Left>'},
+  \   {'at': '\%#', 'char': '"', 'input': '""<Left>'},
   \   {'at': '\%#"', 'char': '"', 'input': '<Right>'},
   \   {'at': '"\%#"', 'char': '<BS>', 'input': '<BS><Del>'},
   \   {'at': '""\%#', 'char': '<BS>', 'input': '<BS><BS>'},
@@ -128,7 +129,7 @@ function! smartinput#define_default_rules()  "{{{2
   \   {'at': '""""""\%#', 'char': '<BS>', 'input': '<BS><BS><BS><BS><BS><BS>'},
   \ ])
   call urules.add('``', [
-  \   {'at': '\%#\_s', 'char': '`', 'input': '``<Left>'},
+  \   {'at': '\%#', 'char': '`', 'input': '``<Left>'},
   \   {'at': '\%#`', 'char': '`', 'input': '<Right>'},
   \   {'at': '`\%#`', 'char': '<BS>', 'input': '<BS><Del>'},
   \   {'at': '``\%#', 'char': '<BS>', 'input': '<BS><BS>'},
