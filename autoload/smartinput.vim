@@ -72,7 +72,7 @@ function! smartinput#define_default_rules()  "{{{2
     let self.table[a:name] = a:urules
   endfunction
   call urules.add('()', [
-  \   {'at': '\%#\_s', 'char': '(', 'input': '()<Left>'},
+  \   {'at': '\%#\_W', 'char': '(', 'input': '()<Left>'},
   \   {'at': '\%#\_s*)', 'char': ')', 'input': '<C-r>=smartinput#_leave_block('')'')<Enter><Right>'},
   \   {'at': '(\%#)', 'char': '<BS>', 'input': '<BS><Del>'},
   \   {'at': '()\%#', 'char': '<BS>', 'input': '<BS><BS>'},
@@ -80,14 +80,14 @@ function! smartinput#define_default_rules()  "{{{2
   \   {'at': '(\%#)', 'char': '<Enter>', 'input': '<Enter><Enter><Up><Esc>"_S'},
   \ ])
   call urules.add('[]', [
-  \   {'at': '\%#\_s', 'char': '[', 'input': '[]<Left>'},
+  \   {'at': '\%#\_W', 'char': '[', 'input': '[]<Left>'},
   \   {'at': '\%#\_s*\]', 'char': ']', 'input': '<C-r>=smartinput#_leave_block('']'')<Enter><Right>'},
   \   {'at': '\[\%#\]', 'char': '<BS>', 'input': '<BS><Del>'},
   \   {'at': '\[\]\%#', 'char': '<BS>', 'input': '<BS><BS>'},
   \   {'at': '\\\%#', 'char': '[', 'input': '['},
   \ ])
   call urules.add('{}', [
-  \   {'at': '\%#\_s', 'char': '{', 'input': '{}<Left>'},
+  \   {'at': '\%#\_W', 'char': '{', 'input': '{}<Left>'},
   \   {'at': '\W\%#', 'char': '{', 'input': '{}<Left>'},
   \   {'at': '\%#\_s*}', 'char': '}', 'input': '<C-r>=smartinput#_leave_block(''}'')<Enter><Right>'},
   \   {'at': '{\%#}', 'char': '<BS>', 'input': '<BS><Del>'},
@@ -309,14 +309,6 @@ function! s:_encode_for_map_char_expr(rhs_char)
   return s
 endfunction
 
-function! s:_input_pre_expr()
-  let s = ''
-  if exists('g:loaded_neocomplcache')
-      let s = neocomplcache#smart_close_popup()
-  endif
-  return s
-endfunction
-
 function! s:_trigger_or_fallback(char, fallback)
   let nrule =
   \ mode() =~# '\v^(i|R|Rv)$'
@@ -333,11 +325,11 @@ function! s:_trigger_or_fallback(char, fallback)
   \   )
 
   if nrule is 0
-    " call tlog#Log("smartinput fallback:" . PP(a:fallback))
+    " call tlog#Log("smartinput fallback: " . a:fallback)
     return a:fallback
   else
-    " call tlog#Log("smartinput _input " . s:_input_pre_expr() . nrule._input)
-    return s:_input_pre_expr() . nrule._input
+    " call tlog#Log("smartinput _input: " . nrule._input)
+    return nrule._input
   endif
 endfunction
 
